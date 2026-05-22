@@ -269,50 +269,23 @@ lbl.textContent  = LABELS[0][0];
 desc.textContent = LABELS[0][1];
 timer = setTimeout(() => goTo(), 10000);
 </script>
-<div id="yt-bg" style="position:fixed;width:1px;height:1px;top:-9999px;left:-9999px;pointer-events:none;opacity:0;" aria-hidden="true"></div>
 
 <script>
 (function(){
-  /* ── Invisible background music: Gary Jules – Mad World ── */
-  var tag = document.createElement('script');
-  tag.src = 'https://www.youtube.com/iframe_api';
-  document.head.appendChild(tag);
-
-  var player, apiReady = false, userActed = false;
-
-  window.onYouTubeIframeAPIReady = function() {
-    player = new YT.Player('yt-bg', {
-      width: 1, height: 1,
-      videoId: 'etSbOs3aUqI',
-      playerVars: {
-        autoplay: 0, controls: 0, disablekb: 1,
-        fs: 0, iv_load_policy: 3,
-        loop: 1, playlist: 'etSbOs3aUqI',
-        rel: 0, modestbranding: 1
-      },
-      events: {
-        onReady: function(e) {
-          apiReady = true;
-          e.target.setVolume(52);
-          /* Si el usuario ya hizo clic antes de que cargara la API */
-          if (userActed) { e.target.playVideo(); }
-        }
-      }
-    });
-  };
-
+  var started = false;
   function startMusic() {
-    userActed = true;
-    if (apiReady && player && typeof player.playVideo === 'function') {
-      player.playVideo();
-    }
+    if (started) return;
+    started = true;
+    var f = document.createElement('iframe');
+    f.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;border:0;opacity:0;pointer-events:none;';
+    f.allow = 'autoplay; encrypted-media';
+    f.src = 'https://www.youtube.com/embed/etSbOs3aUqI?autoplay=1&loop=1&playlist=etSbOs3aUqI&controls=0&disablekb=1&fs=0&iv_load_policy=3&rel=0&modestbranding=1';
+    document.body.appendChild(f);
   }
-  /* Dispara con cualquier interacción — mousedown llega antes que click */
-  ['mousedown','touchstart','keydown'].forEach(function(ev) {
-    document.addEventListener(ev, function fire() {
-      startMusic();
-      document.removeEventListener(ev, fire);
-    });
+  /* mousemove: arranca en cuanto el usuario mueve el ratón,
+     sin necesidad de clic */
+  ['mousemove','mousedown','touchstart','keydown'].forEach(function(ev){
+    document.addEventListener(ev, startMusic, {once:true, passive:true});
   });
 })();
 </script>
