@@ -234,7 +234,7 @@ html,body{height:100%;background:var(--dark);font-family:"DM Sans",sans-serif;ov
 </div>
 
 <script>
-const LABELS = [["El hombre que abrazaba la vida", "Así como abrazaba ese árbol, te abrazaba a ti.\nDe los que están, de los que escuchan."], ["El agente que cuidaba", "Con la misma ternura para rescatar un búho herido\nque para apoyar a un compañero."], ["El compañero", "Siempre con buen humor, incluso en turno.\nHacía más llevadero lo difícil."], ["De noche, bajo la lluvia", "Sin importar la hora, sin importar el frío.\nSiempre presente cuando se le necesitaba."], ["Una carrera al servicio de El Escorial.", "A sus 60 años seguía de servicio en las calles de El Escorial.\nMerecía más respeto del que recibió."], ["El menú lo ponía \"Jota\"", "Porque cuidar al compañero no acaba con el turno.\nEn la cocina del cuartel, siempre con una sonrisa."], ["La vida en sus manos", "El mismo que protegía a los vecinos de El Escorial\ntambién rescataba a las criaturas más vulnerables."]];
+const LABELS = [["El hombre que abrazaba la vida", "Así como abrazaba ese árbol, te abrazaba a ti.\nDe los que están, de los que escuchan."], ["El agente que cuidaba", "Con la misma ternura para rescatar un búho herido\nque para apoyar a un compañero."], ["El compañero", "Siempre con buen humor, incluso en turno.\nHacía más llevadero lo difícil."], ["De noche, bajo la lluvia", "Sin importar la hora, sin importar el frío.\nSiempre presente cuando se le necesitaba."], ["Una carrera al servicio de El Escorial.", "A sus 60 años seguía de servicio en las calles de El Escorial.\nMerecía más respeto del que recibió."], ["Como le recordamos", "Un chuletón en la plancha, una mano en alto, una sonrisa.\nEso también era \"Jota\", y es lo que se ha ido con él."], ["Nadie quedaba sin su ayuda", "Con las mismas manos que socorría a los vecinos de El Escorial,\ncuidaba también a los más indefensos."]];
 const slides  = document.querySelectorAll('.slide');
 const dots    = document.querySelectorAll('.dot');
 const header  = document.getElementById('header');
@@ -270,48 +270,50 @@ desc.textContent = LABELS[0][1];
 timer = setTimeout(() => goTo(), 10000);
 </script>
 <div id="yt-bg" style="position:fixed;width:1px;height:1px;top:-9999px;left:-9999px;pointer-events:none;opacity:0;" aria-hidden="true"></div>
+
 <script>
 (function(){
+  /* ── Invisible background music: Gary Jules – Mad World ── */
   var tag = document.createElement('script');
   tag.src = 'https://www.youtube.com/iframe_api';
   document.head.appendChild(tag);
-  var player, ready = false, played = false;
+
+  var player, apiReady = false, userActed = false;
 
   window.onYouTubeIframeAPIReady = function() {
     player = new YT.Player('yt-bg', {
       width: 1, height: 1,
       videoId: 'etSbOs3aUqI',
       playerVars: {
-        autoplay: 1,
-        controls: 0,
-        disablekb: 1,
-        fs: 0,
-        iv_load_policy: 3,
-        loop: 1,
-        playlist: 'etSbOs3aUqI',
-        rel: 0
+        autoplay: 0, controls: 0, disablekb: 1,
+        fs: 0, iv_load_policy: 3,
+        loop: 1, playlist: 'etSbOs3aUqI',
+        rel: 0, modestbranding: 1
       },
       events: {
         onReady: function(e) {
-          ready = true;
-          e.target.setVolume(55);
-          e.target.playVideo();
+          apiReady = true;
+          e.target.setVolume(52);
+          /* Si el usuario ya hizo clic antes de que cargara la API */
+          if (userActed) { e.target.playVideo(); }
         }
       }
     });
   };
 
-  // Fallback: start on first user interaction if autoplay was blocked
-  function startOnInteraction() {
-    if (!played && ready && player && player.playVideo) {
+  function startMusic() {
+    userActed = true;
+    if (apiReady && player && typeof player.playVideo === 'function') {
       player.playVideo();
-      played = true;
     }
-    document.removeEventListener('click', startOnInteraction);
-    document.removeEventListener('keydown', startOnInteraction);
   }
-  document.addEventListener('click', startOnInteraction);
-  document.addEventListener('keydown', startOnInteraction);
+  /* Dispara con cualquier interacción — mousedown llega antes que click */
+  ['mousedown','touchstart','keydown'].forEach(function(ev) {
+    document.addEventListener(ev, function fire() {
+      startMusic();
+      document.removeEventListener(ev, fire);
+    });
+  });
 })();
 </script>
 </body>
