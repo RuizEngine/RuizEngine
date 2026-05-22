@@ -16,6 +16,41 @@
 }
 html,body{height:100%;background:var(--dark);font-family:"DM Sans",sans-serif;overflow:hidden;}
 
+
+/* ── INTRO SCREEN ────────────────────────────────────────────────────── */
+#intro{
+  position:fixed;inset:0;z-index:100;
+  background:#000;
+  display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:0;
+  cursor:pointer;
+  transition:opacity 1.2s ease;
+}
+#intro.fade{opacity:0;pointer-events:none;}
+#intro-name{
+  font-family:"Playfair Display",serif;font-weight:700;
+  font-size:clamp(1.4rem,4vw,2.4rem);color:var(--cream);
+  letter-spacing:0.04em;text-align:center;line-height:1.2;
+}
+#intro-nick{
+  font-family:"Playfair Display",serif;font-style:italic;font-weight:400;
+  font-size:clamp(1rem,2.5vw,1.5rem);color:var(--amber);
+  margin-top:0.5rem;text-align:center;
+}
+#intro-note{
+  font-size:clamp(1.4rem,3vw,2rem);color:var(--red2);
+  margin-top:2.8rem;
+  animation:pulse-note 2.2s ease-in-out infinite;
+}
+@keyframes pulse-note{
+  0%,100%{opacity:0.5;transform:scale(1);}
+  50%{opacity:1;transform:scale(1.12);}
+}
+#intro-cta{
+  font-size:0.58rem;letter-spacing:0.26em;color:rgba(250,243,232,0.35);
+  text-transform:uppercase;margin-top:0.8rem;text-align:center;
+}
+
 /* ── STAGE ─────────────────────────────────────────────────────── */
 .stage{position:fixed;inset:0;}
 .slide{position:absolute;inset:0;opacity:0;transition:opacity 2.6s ease;}
@@ -155,6 +190,14 @@ html,body{height:100%;background:var(--dark);font-family:"DM Sans",sans-serif;ov
 </head>
 <body>
 
+
+<div id="intro">
+  <div id="intro-name">José Ramón Sainz López</div>
+  <div id="intro-nick">&ldquo;Jota&rdquo;</div>
+  <div id="intro-note">&#9835;</div>
+  <div id="intro-cta">Pulsa para comenzar</div>
+</div>
+
 <div class="stage" id="slides">
 
   <div class="slide active" data-index="0">
@@ -269,23 +312,20 @@ lbl.textContent  = LABELS[0][0];
 desc.textContent = LABELS[0][1];
 timer = setTimeout(() => goTo(), 10000);
 </script>
-
 <script>
 (function(){
-  var started = false;
-  function startMusic() {
-    if (started) return;
-    started = true;
+  document.getElementById('intro').addEventListener('click', function(){
+    /* El clic es directo → Chrome permite el autoplay en el iframe */
     var f = document.createElement('iframe');
-    f.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;border:0;opacity:0;pointer-events:none;';
+    f.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:2px;height:2px;border:0;opacity:0.001;pointer-events:none;';
     f.allow = 'autoplay; encrypted-media';
     f.src = 'https://www.youtube.com/embed/etSbOs3aUqI?autoplay=1&loop=1&playlist=etSbOs3aUqI&controls=0&disablekb=1&fs=0&iv_load_policy=3&rel=0&modestbranding=1';
     document.body.appendChild(f);
-  }
-  /* mousemove: arranca en cuanto el usuario mueve el ratón,
-     sin necesidad de clic */
-  ['mousemove','mousedown','touchstart','keydown'].forEach(function(ev){
-    document.addEventListener(ev, startMusic, {once:true, passive:true});
+
+    /* Fade y ocultar overlay */
+    var intro = document.getElementById('intro');
+    intro.classList.add('fade');
+    setTimeout(function(){ intro.style.display = 'none'; }, 1300);
   });
 })();
 </script>
